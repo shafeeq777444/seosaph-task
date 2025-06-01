@@ -1,9 +1,9 @@
 import express from "express"
 import { addController, getController } from "../controllers/taskController.js"
-import { refreshTokenControl } from "../controllers/userController.js"
+import jwtVerifyCookies from "../middlewares/VerifyCoookies.js"
 const route=express.Router()
 
-route.post('/add',refreshTokenControl,addController)
-route.get('/get',refreshTokenControl,getController)
+route.post('/add',jwtVerifyCookies,addController)
+route.get('/get',jwtVerifyCookies,getController)
 
 export default route
