@@ -1,45 +1,37 @@
-import React, { useState } from "react";
-import toast from "react-hot-toast";
-import axiosInstance from "../../services/axiosInstance";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { registerUser } from './authThunk'
+import toast from 'react-hot-toast';
 
-const Register = () => {
-    const [email, setemail] = useState("");
-    const [password, setPassword] = useState("");
-    const navigate=useNavigate()
+const Login = () => {
+    const [name,setName]=useState("")
+    const [password,setPassword]=useState("")
+    const dispatch=useDispatch()
+    const userName=useSelector((state)=>state.user?.name)
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            await axiosInstance.post("/user/register",{email,password});
-            toast.success("Register succesfull");
-            navigate('/login')
-        } catch (er) {
-          toast.error(er.response.data.message)
-        }
-    };
+    const handleSubmit=async(e)=>{
+      e.preventDefault()
+     await dispatch(registerUser({name,password}))
+     
+    }
+    useEffect(()=>{
+      if(userName){
+        toast.success(`${userName} is logged in successfully`)
+      }
 
-    return (
-        <div>
-            <form onSubmit={handleSubmit}>
-                <label>email</label>
-                <input
-                    value={email}
-                    onChange={(e) => {
-                        setemail(e.target.value);
-                    }}
-                ></input>
-                <label>password</label>
-                <input
-                    value={password}
-                    onChange={(e) => {
-                        setPassword(e.target.value);
-                    }}
-                ></input>
-                <button>Submit</button>
-            </form>
-        </div>
-    );
-};
+    },[userName])
 
-export default Register;
+  return (
+    <div>
+        <form onSubmit={handleSubmit}>
+            <label>name</label>
+                  <input value={name} onChange={(e)=>{setName(e.target.value)}}></input>
+                  <label>password</label>
+                  <input value={password} onChange={(e)=>{setPassword(e.target.value)}}></input>
+                  <button>Submit</button>
+        </form>
+    </div>
+  )
+}
+
+export default Login

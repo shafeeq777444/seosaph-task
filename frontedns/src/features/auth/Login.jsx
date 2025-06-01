@@ -1,34 +1,36 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { loginUser } from './authThunk'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
-import axiosInstance from '../../services/axiosInstance'
 
 const Register = () => {
-    const [email,setemail]=useState('')
+    const [name,setName]=useState('')
     const [password,setPassword]=useState('')
-
+    const dispatch=useDispatch()
     const navigate=useNavigate()
+   const {name:userName,error}= useSelector((state)=>state.user)
 
-
-    const handleSubmit=async(e)=>{
+    const handleSubmit=(e)=>{
        e.preventDefault()
-       try{
-         await axiosInstance.post("/user/login",{email,password});
-       toast.success('user Login success')
-        navigate('/')
-       }catch(er){
-         toast.error(er.response.data.message)
-       }
-      
+        dispatch(loginUser({name,password}))
         
     }
+    useEffect(()=>{
+      if(userName){
+        toast.success(`${userName}log in success` )
+        navigate('/home')
+      }
+      if(error){
+        toast.error(error)
 
-
+      }
+    },[userName,error,navigate])
   return (
     <div> 
       <form onSubmit={handleSubmit}>
-        <label>email</label>
-          <input value={email} onChange={(e)=>setemail(e.target.value)}/>
+        <label>name</label>
+          <input value={name} onChange={(e)=>setName(e.target.value)}/>
           <label>password</label>
           <input value={password} onChange={(e)=>setPassword(e.target.value)}/>
           <button>submit</button>
